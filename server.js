@@ -1,13 +1,16 @@
 const express = require('express');
 const path = require('path');
 const api = require('./routes/index.js');
+const fs = require('fs');
+const util = require('util');
 
 const PORT = process.env.port || 3001;
 
 const app = express();
 
 app.use('/api', api);
-app.use(express.static('public'))
+app.use(express.json());
+app.use(express.static('public'));
 
 
 //GET route for homepage
@@ -25,6 +28,25 @@ app.get('*', (req,res) =>
     res.sendFile(path.join(__dirname, '/public/index.html'))
 );
 
+const readFromFile = util.promisify(fs.readFile);
+
+const writeToFile = (destination, content) =>
+  fs.writeFile(destination, JSON.stringify(content, null, 4), (err) =>
+    err ? console.error(err) : console.info(`\nData written to ${destination}`)
+  );
+
+const readAndAppend = (content, file) => {
+    fs.readFile(file, 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+      } else {
+        const parsedData = JSON.parse(data);
+        parsedData.push(content);
+        writeToFile(file, parsedData);
+      }
+    });
+  };
+
 //GET route for retrieving feedback
 app.get('/api/notes', (req,res) => {
     console.info(`${req.method} request received for notes`)
@@ -35,7 +57,7 @@ app.get('/api/notes', (req,res) => {
 app.post('/api/notes', (req,res) => {
     console.info(`${req.method} request received to submit note`);
 
-    const { title, text } = req.body
+    const { title, text } = req.body;
 
     if (title && text) {
         
@@ -44,7 +66,16 @@ app.post('/api/notes', (req,res) => {
             text
         };
 
+        readAndAppend(newNote, './db/db.json');
         
+        const response = {
+            status: 'success',
+            body: newNote,
+        };
+
+        res.json(response);
+    } else {
+        res.json('Error is posting note');
     }
 })
 
