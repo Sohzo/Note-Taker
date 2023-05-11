@@ -35,6 +35,7 @@ const writeToFile = (destination, content) =>
     err ? console.error(err) : console.info(`\nData written to ${destination}`)
   );
 
+//Function to write new notes to db.json file
 const readAndAppend = (content, file) => {
     fs.readFile(file, 'utf8', (err, data) => {
       if (err) {
@@ -51,9 +52,10 @@ const readAndAppend = (content, file) => {
 app.get('/api/notes', (req,res) => {
     console.info(`${req.method} request received for notes`)
 
-    readFromFile('./db/db.json').then((data) => res.josn(JSON.parse(data)))
+    readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)))
 });
 
+//POST method for note
 app.post('/api/notes', (req,res) => {
     console.info(`${req.method} request received to submit note`);
 
@@ -63,7 +65,8 @@ app.post('/api/notes', (req,res) => {
         
         const newNote = {
             title,
-            text
+            text,
+            // tip_id: unid()
         };
 
         readAndAppend(newNote, './db/db.json');
