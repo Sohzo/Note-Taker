@@ -81,10 +81,28 @@ app.post('/api/notes', (req,res) => {
 
 
 //GET route for wildcard - sends to homepage
-app.get('*', (req,res) =>
+app.get('*', (req,res) => {
     res.sendFile(path.join(__dirname, '/public/index.html'))
-);
+});
 
-app.listen(PORT, () => 
+app.delete('/api/notes/:id', (req,res) => {
+  const id = req.params.id * 1;
+  
+
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+    } else {
+      const allNotes = JSON.parse(data);
+      const noteToDelete = allNotes.find(el => el.id === id);
+      const index = allNotes.indexOf(noteToDelete);
+      allNotes.splice(index);
+      writeToFile('./db/db.json', allNotes);
+      
+    }
+  });
+});
+
+app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)
-)
+});
