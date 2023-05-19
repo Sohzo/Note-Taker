@@ -5,7 +5,7 @@ const fs = require('fs');
 //const util = require('util');
 const unid = require('./helper/unid.js');
 
-const PORT = process.env.port || 3001;
+const PORT = process.env.PORT || 3001;
 
 const app = express();
 
@@ -98,7 +98,6 @@ app.delete('/api/notes/:id', (req,res) => {
       const index = allNotes.indexOf(noteToDelete);
       allNotes.splice(index);
       writeToFile('./db/db.json', allNotes);
-      
     }
   });
 });
