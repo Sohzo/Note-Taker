@@ -1,4 +1,4 @@
-# Project 09 - Node.js - README Generator
+# Project 011 - Note-Taker
   ![MIT](https://img.shields.io/badge/license-MIT-blue)
 
   ## Description
